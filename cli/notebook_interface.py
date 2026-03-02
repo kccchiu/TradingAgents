@@ -1,58 +1,60 @@
-class NotebookAnalysisConfig:
-    def __init__(self, analyst, research_depth, llm_provider):
-        self.analyst = analyst
-        self.research_depth = research_depth
-        self.llm_provider = llm_provider
-
+from datetime import datetime, time
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from collections import deque
 
 class AnalystSelection(Enum):
-    MARKET = 'Market'
-    SOCIAL = 'Social'
-    NEWS = 'News'
-    FUNDAMENTALS = 'Fundamentals'
+    ANALYST_A = 'analyst_a'
+    ANALYST_B = 'analyst_b'
+    ANALYST_C = 'analyst_c'
+    # Additional analysts can be added here.
 
 class ResearchDepth(Enum):
-    SHALLOW = 'Shallow'
-    MEDIUM = 'Medium'
-    DEEP = 'Deep'
+    SHALLOW = 'shallow'
+    MODERATE = 'moderate'
+    DEEP = 'deep'
 
 class LLMProvider(Enum):
-    OPENAI = 'OpenAI'
-    GOOGLE = 'Google'
-    ANTHROPIC = 'Anthropic'
-    XAI = 'xAI'
-    OPENROUTER = 'OpenRouter'
-    OLLAMA = 'Ollama'
+    OPENAI = 'openai'
+    GOOGLE = 'google'
+    ANTHROPIC = 'anthropic'
+    XAI = 'xai'
+    OPENROUTER = 'openrouter'
+    OLLAMA = 'ollama'
 
 class NotebookMessageBuffer:
-    def __init__(self):
-        self.messages = []
+    def __init__(self, max_size: int = 10):
+        self.buffer = deque(maxlen=max_size)
 
-    def add_message(self, message):
-        self.messages.append(message)
+    def add_message(self, message: str):
+        self.buffer.append(message)
 
     def clear(self):
-        self.messages = []
+        self.buffer.clear()
 
-    def export_to_disk(self, filename):
-        # Save messages to disk
-        with open(filename, 'w') as f:
-            for message in self.messages:
-                f.write(message + '\n')
+    def get_messages(self) -> List[str]:
+        return list(self.buffer)
 
-    def display(self):
-        for message in self.messages:
-            print(message)
-
+@dataclass
+class NotebookAnalysisConfig:
+    analyst: AnalystSelection
+    research_depth: ResearchDepth
+    llm_provider: LLMProvider
+    additional_params: Optional[Dict[str, Any]] = None
 
 def run_notebook_analysis(config: NotebookAnalysisConfig):
-    print("Running analysis...")
-    buffer = NotebookMessageBuffer()
-    buffer.add_message(f"Starting analysis with {config.analyst} using {config.research_depth} depth and {config.llm_provider} provider.")
-    # Streaming analysis and progress tracking would go here.
-    # Example of outputting a report
-    report_filename = 'analysis_report.txt'
-    buffer.export_to_disk(report_filename)
-    print(f"Analysis report saved to {report_filename}")
-    buffer.display()
+    # Implementation of the analysis execution logic based on config.
+    pass
+
+def _update_buffer_from_chunk(buffer: NotebookMessageBuffer, chunk: str):
+    buffer.add_message(chunk)
+
+def _generate_report_markdown(data: Any) -> str:
+    # Implementation of markdown report generation from data.
+    return "# Report\nGenerated report content here."
+
+def _save_notebook_report(report: str, path: Path):
+    with open(path, 'w') as file:
+        file.write(report)
